@@ -111,20 +111,18 @@ Generate ${count} multiple-choice questions for:
 REQUIREMENTS:
 1. Align with BASIS Charter School standards (rigorous, accelerated)
 2. Test conceptual understanding, not just memorization
-3. Include 4 plausible answer options
+3. Include 4 plausible answer options (label them A, B, C, D)
 4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
-5. For Chinese/Mandarin questions: ALWAYS include the actual Chinese characters directly in the question.
-   - Example: "What is the meaning of 你好?" NOT "What is the meaning of the Chinese character?"
-   - Include characters like: 你好, 谢谢, 再见, etc. directly in the text
-6. Keep questions clear and age-appropriate
+5. For Chinese/Mandarin questions: ALWAYS include actual Chinese characters (你好, 谢谢, etc.)
+6. IMPORTANT: Keep explanations SHORT (1-2 sentences max, under 100 words)
 
-Return ONLY a JSON array with this format:
+Return ONLY a valid JSON array:
 [
   {
-    "question": "Question text here?",
-    "options": ["A", "B", "C", "D"],
-    "answer": "The correct option text",
-    "explanation": "Brief explanation"
+    "question": "Question text?",
+    "options": ["A) option1", "B) option2", "C) option3", "D) option4"],
+    "answer": "A) option1",
+    "explanation": "Short explanation in 1-2 sentences."
   }
 ]`;
 
@@ -137,12 +135,18 @@ Return ONLY a JSON array with this format:
             },
             body: JSON.stringify({
                 model: 'llama-3.3-70b-versatile',
-                messages: [{
-                    role: 'user',
-                    content: prompt
-                }],
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are a quiz generator. Always respond with valid JSON only. Keep explanations under 50 words.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
                 temperature: 0.7,
-                max_tokens: 4096
+                max_tokens: 3000
             })
         });
 
