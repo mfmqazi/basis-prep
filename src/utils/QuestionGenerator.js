@@ -104,10 +104,11 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
         // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
-        // Initialize the SDK
+        // Initialize the SDK with the API version that supports the model
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Using the latest stable model as of late 2025
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        // Use gemini-2.0-flash-exp as it's the widely available experimental flash model
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for students at Basis Charter Schools (known for accelerated, high standards).
 
