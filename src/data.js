@@ -9,7 +9,8 @@ const SUBJECTS_BY_GRADE = {
         "Science": ["Introduction to Science", "Physical Geography", "Engineering & Technology"],
         "Humanities": ["History", "Civics", "Geography", "Cultural Studies"],
         "English": ["Reading", "Writing", "Spelling", "Phonics", "Grammar"],
-        "Engineering": ["Engineering Design Process", "Structures", "Simple Machines"]
+        "Engineering": ["Engineering Design Process", "Structures", "Simple Machines"],
+        "Mandarin": ["Pinyin", "Basic Characters", "Greetings & Numbers", "Colors & Shapes"]
     },
     // Middle School (5-7) - Specialized Subjects
     // Biology, Chemistry, Physics start early (Gr 6)
@@ -18,6 +19,7 @@ const SUBJECTS_BY_GRADE = {
         "Science": ["Introduction to Science (Gr 5)", "Biology", "Chemistry", "Physics"],
         "English": ["English Language", "Literature", "Writing", "Classics"],
         "History": ["World History", "American History", "Geography"],
+        "Mandarin": ["Reading & Writing", "Conversation", "Chinese Culture", "HSK Preparation"],
         "Electives": ["Latin", "Logic", "Economics", "Computer Science"]
     },
     // High School (8-12) - AP Focus
@@ -26,6 +28,7 @@ const SUBJECTS_BY_GRADE = {
         "Science": ["Honors Biology", "Honors Chemistry", "Honors Physics", "AP Biology", "AP Chemistry", "AP Physics"],
         "English": ["Honors English Lit", "Honors English Lang", "AP English Language", "AP English Literature"],
         "Social Science": ["AP World History", "AP US History", "AP Macreconomics", "AP Microeconomics", "AP Government", "AP Psychology"],
+        "Mandarin": ["Advanced Mandarin", "AP Chinese Prep", "Chinese Literature", "Business Chinese"],
         "Capstone": ["Senior Project", "Research Methods"]
     },
     // Advanced Placement (AP) - Full Suite
