@@ -61,7 +61,7 @@ export async function generateQuestions(grade, subject, topic, count = 5) {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     // Debug log to check if key exists (don't log the actual key)
-    console.log("v3.2 - Using Gemini 1.5 Flash 8B");
+    console.log("v3.3 - Using Gemini 2.5 Flash");
     console.log("🔑 API Key Status:", apiKey ? "Present" : "Missing");
 
     // If no API key, use fallback
@@ -158,7 +158,7 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
 ]`;
 
         // Direct API call using fetch
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
