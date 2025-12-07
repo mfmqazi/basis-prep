@@ -107,10 +107,39 @@ export default function Quiz() {
 
     if (loading) {
         return (
-            <div className="text-center mt-20">
-                <div className="glass-panel inline-block px-8 py-6 bg-white/60 border-white/50">
-                    <div className="text-indigo-900 text-xl mb-2 font-bold">Generating your unique quiz...</div>
-                    <div className="text-slate-500 text-sm">This may take a few seconds</div>
+            <div className="flex flex-col items-center justify-center mt-20">
+                <div className="glass-panel px-12 py-10 bg-white/80 border-white/60 shadow-xl text-center">
+                    {/* Animated Brain/Lightbulb Icon */}
+                    <div className="relative mb-6">
+                        <div className="w-24 h-24 mx-auto relative">
+                            {/* Outer rotating ring */}
+                            <div className="absolute inset-0 border-4 border-indigo-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+                            {/* Inner pulsing circle */}
+                            <div className="absolute inset-2 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full animate-pulse flex items-center justify-center shadow-lg shadow-indigo-500/50">
+                                {/* Brain emoji or icon */}
+                                <span className="text-4xl" role="img" aria-label="thinking">🧠</span>
+                            </div>
+                            {/* Orbiting dots */}
+                            <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2s' }}>
+                                <div className="absolute top-0 left-1/2 w-3 h-3 bg-indigo-400 rounded-full -translate-x-1/2 -translate-y-1"></div>
+                            </div>
+                            <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2.5s', animationDirection: 'reverse' }}>
+                                <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-violet-400 rounded-full -translate-x-1/2 translate-y-1"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 className="text-2xl font-bold text-indigo-900 mb-2">Generating Your Quiz...</h2>
+                    <p className="text-slate-500 mb-4">Creating unique questions with AI</p>
+
+                    {/* Animated progress dots */}
+                    <div className="flex justify-center gap-2">
+                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+
+                    <p className="text-xs text-slate-400 mt-4">{grade} • {subject} • {topic}</p>
                 </div>
             </div>
         );
