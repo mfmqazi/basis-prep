@@ -58,15 +58,15 @@ function generateFallbackQuestion(grade, subject, topic) {
 }
 
 export async function generateQuestions(grade, subject, topic, count = 5) {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
     // Debug log to check if key exists (don't log the actual key)
-    console.log("v3.3 - Using Gemini 2.5 Flash");
+    console.log("v4.0 - Using Groq (Llama 3.3 70B) - Ultra Fast!");
     console.log("🔑 API Key Status:", apiKey ? "Present" : "Missing");
 
     // If no API key, use fallback
-    if (!apiKey || apiKey.includes("your_gemini_api_key")) {
-        console.warn("⚠️ No valid Gemini API key. Using fallback.");
+    if (!apiKey || apiKey.includes("your_groq_api_key")) {
+        console.warn("⚠️ No valid Groq API key. Using fallback.");
         return Array.from({ length: count }, () => generateFallbackQuestion(grade, subject, topic));
     }
 
@@ -157,18 +157,21 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
   }
 ]`;
 
-        // Direct API call using fetch
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        // Direct API call using Groq
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
+                model: 'llama-3.3-70b-versatile',
+                messages: [{
+                    role: 'user',
+                    content: prompt
+                }],
+                temperature: 0.7,
+                max_tokens: 4096
             })
         });
 
@@ -179,11 +182,11 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
 
         const data = await response.json();
 
-        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+        if (!data.choices || !data.choices[0]?.message?.content) {
             throw new Error('Invalid API response structure');
         }
 
-        let text = data.candidates[0].content.parts[0].text;
+        let text = data.choices[0].message.content;
 
         // --- ROBUST JSON CLEANING ---
         const cleanJSON = (str) => {
