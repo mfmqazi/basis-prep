@@ -4,7 +4,7 @@ import { generateQuestions } from '../utils/QuestionGenerator';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { CheckCircle, XCircle, AlertCircle, Save, RotateCcw, Home } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Save, RotateCcw, Home, ExternalLink, Video } from 'lucide-react';
 import { TextWithMath } from '../components/MathText';
 
 export default function Quiz() {
@@ -26,6 +26,13 @@ export default function Quiz() {
     const [answers, setAnswers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
+    // Generate Khan Academy search URL based on subject and topic
+    const getKhanAcademyUrl = (subj, topicName) => {
+        const searchQuery = encodeURIComponent(`${subj} ${topicName}`);
+        return `https://www.khanacademy.org/search?search_again=1&page_search_query=${searchQuery}`;
+    };
+
 
     useEffect(() => {
         async function loadQuestions() {
@@ -265,16 +272,43 @@ export default function Quiz() {
                 </div>
 
                 {showFeedback && currentQuestion.explanation && (
-                    <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg animate-fade-in">
-                        <div className="flex items-start gap-3">
-                            <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
-                            <div>
-                                <p className="font-semibold text-blue-900 mb-1">Explanation:</p>
-                                <p className="text-blue-800 text-sm leading-relaxed">
-                                    <TextWithMath>{currentQuestion.explanation}</TextWithMath>
-                                </p>
+                    <div className="mt-6 space-y-4 animate-fade-in">
+                        {/* Explanation */}
+                        <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                            <div className="flex items-start gap-3">
+                                <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+                                <div>
+                                    <p className="font-semibold text-blue-900 mb-1">Explanation:</p>
+                                    <p className="text-blue-800 text-sm leading-relaxed">
+                                        <TextWithMath>{currentQuestion.explanation}</TextWithMath>
+                                    </p>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Khan Academy Recommendation - Only show if answer is wrong */}
+                        {selectedAnswer !== currentQuestion.answer && (
+                            <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
+                                <div className="flex items-start gap-3">
+                                    <Video className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-amber-900 mb-2">📺 Need help with this topic?</p>
+                                        <a
+                                            href={getKhanAcademyUrl(subject, topic)}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
+                                        >
+                                            Watch Khan Academy Videos
+                                            <ExternalLink size={14} />
+                                        </a>
+                                        <p className="text-amber-700 text-xs mt-2">
+                                            Free video lessons to help you understand {topic} better
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
