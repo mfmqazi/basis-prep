@@ -113,8 +113,9 @@ REQUIREMENTS:
 2. Test conceptual understanding, not just memorization
 3. Include 4 plausible answer options (label them A, B, C, D)
 4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
-5. For Chinese/Mandarin questions: ALWAYS include actual Chinese characters (你好, 谢谢, etc.)
-6. IMPORTANT: Keep explanations SHORT (1-2 sentences max, under 100 words)
+5. For matrices: use $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ format with \\\\ for row breaks
+6. For Chinese/Mandarin: include actual characters (你好, 谢谢, etc.)
+7. Keep explanations SHORT (1-2 sentences, under 50 words)
 
 Return ONLY a valid JSON array:
 [
@@ -122,7 +123,7 @@ Return ONLY a valid JSON array:
     "question": "Question text?",
     "options": ["A) option1", "B) option2", "C) option3", "D) option4"],
     "answer": "A) option1",
-    "explanation": "Short explanation in 1-2 sentences."
+    "explanation": "Short 1-2 sentence explanation."
   }
 ]`;
 
@@ -257,6 +258,11 @@ Return ONLY a valid JSON array:
             fixed = fixed.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
                 String.fromCharCode(parseInt(hex, 16))
             );
+            // Fix matrix row breaks - ensure \\ becomes proper line breaks in matrices
+            // Replace single \\ with \\\\ for proper matrix row separation
+            fixed = fixed.replace(/\\begin\{(pmatrix|bmatrix|matrix)\}/g, (match) => {
+                return match;
+            });
             return fixed;
         };
 
