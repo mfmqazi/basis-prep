@@ -8,3 +8,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>,
 )
+
+console.log("🚀 VERSION 3.0 - CACHE BUSTED - USING GEMINI 1.5 FLASH");

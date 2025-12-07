@@ -61,6 +61,7 @@ export async function generateQuestions(grade, subject, topic, count = 5) {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     // Debug log to check if key exists (don't log the actual key)
+    console.log("v1.0.5 - Using Gemini 1.5 Flash");
     console.log("🔑 API Key Status:", apiKey ? "Present" : "Missing");
 
     // If no API key, use fallback

@@ -94,7 +94,7 @@ export default function Layout({ children }) {
       </main>
 
       <footer className="py-6 text-center text-slate-500 text-sm">
-        &copy; {new Date().getFullYear()} Basis Prep Platform. All rights reserved.
+        &copy; {new Date().getFullYear()} Basis Prep Platform. All rights reserved. (v1.0.6)
       </footer>
 
       {/* Help Modal */}
