@@ -4,7 +4,7 @@ import { generateQuestions } from '../utils/QuestionGenerator';
 import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { CheckCircle, XCircle, AlertCircle, Save, RotateCcw, Home, ExternalLink, Video } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Save, RotateCcw, Home } from 'lucide-react';
 import { TextWithMath } from '../components/MathText';
 
 export default function Quiz() {
@@ -26,13 +26,6 @@ export default function Quiz() {
     const [answers, setAnswers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-
-    // Generate Khan Academy search URL based on subject and topic
-    const getKhanAcademyUrl = (subj, topicName) => {
-        const searchQuery = encodeURIComponent(`${subj} ${topicName}`);
-        return `https://www.khanacademy.org/search?search_again=1&page_search_query=${searchQuery}`;
-    };
-
 
     useEffect(() => {
         async function loadQuestions() {
@@ -114,39 +107,10 @@ export default function Quiz() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center mt-20">
-                <div className="glass-panel px-12 py-10 bg-white/80 border-white/60 shadow-xl text-center">
-                    {/* Animated Brain/Lightbulb Icon */}
-                    <div className="relative mb-6">
-                        <div className="w-24 h-24 mx-auto relative">
-                            {/* Outer rotating ring */}
-                            <div className="absolute inset-0 border-4 border-indigo-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
-                            {/* Inner pulsing circle */}
-                            <div className="absolute inset-2 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full animate-pulse flex items-center justify-center shadow-lg shadow-indigo-500/50">
-                                {/* Brain emoji or icon */}
-                                <span className="text-4xl" role="img" aria-label="thinking">🧠</span>
-                            </div>
-                            {/* Orbiting dots */}
-                            <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2s' }}>
-                                <div className="absolute top-0 left-1/2 w-3 h-3 bg-indigo-400 rounded-full -translate-x-1/2 -translate-y-1"></div>
-                            </div>
-                            <div className="absolute inset-0 animate-spin" style={{ animationDuration: '2.5s', animationDirection: 'reverse' }}>
-                                <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-violet-400 rounded-full -translate-x-1/2 translate-y-1"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h2 className="text-2xl font-bold text-indigo-900 mb-2">Generating Your Quiz...</h2>
-                    <p className="text-slate-500 mb-4">Creating unique questions with AI</p>
-
-                    {/* Animated progress dots */}
-                    <div className="flex justify-center gap-2">
-                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                    </div>
-
-                    <p className="text-xs text-slate-400 mt-4">{grade} • {subject} • {topic}</p>
+            <div className="text-center mt-20">
+                <div className="glass-panel inline-block px-8 py-6 bg-white/60 border-white/50">
+                    <div className="text-indigo-900 text-xl mb-2 font-bold">Generating your unique quiz...</div>
+                    <div className="text-slate-500 text-sm">This may take a few seconds</div>
                 </div>
             </div>
         );
@@ -272,43 +236,16 @@ export default function Quiz() {
                 </div>
 
                 {showFeedback && currentQuestion.explanation && (
-                    <div className="mt-6 space-y-4 animate-fade-in">
-                        {/* Explanation */}
-                        <div className="p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-                            <div className="flex items-start gap-3">
-                                <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
-                                <div>
-                                    <p className="font-semibold text-blue-900 mb-1">Explanation:</p>
-                                    <p className="text-blue-800 text-sm leading-relaxed">
-                                        <TextWithMath>{currentQuestion.explanation}</TextWithMath>
-                                    </p>
-                                </div>
+                    <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg animate-fade-in">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+                            <div>
+                                <p className="font-semibold text-blue-900 mb-1">Explanation:</p>
+                                <p className="text-blue-800 text-sm leading-relaxed">
+                                    <TextWithMath>{currentQuestion.explanation}</TextWithMath>
+                                </p>
                             </div>
                         </div>
-
-                        {/* Khan Academy Recommendation - Only show if answer is wrong */}
-                        {selectedAnswer !== currentQuestion.answer && (
-                            <div className="p-4 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg">
-                                <div className="flex items-start gap-3">
-                                    <Video className="text-amber-600 flex-shrink-0 mt-0.5" size={20} />
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-amber-900 mb-2">📺 Need help with this topic?</p>
-                                        <a
-                                            href={getKhanAcademyUrl(subject, topic)}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
-                                        >
-                                            Watch Khan Academy Videos
-                                            <ExternalLink size={14} />
-                                        </a>
-                                        <p className="text-amber-700 text-xs mt-2">
-                                            Free video lessons to help you understand {topic} better
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
                 )}
 

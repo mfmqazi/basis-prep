@@ -58,27 +58,31 @@ function generateFallbackQuestion(grade, subject, topic) {
 }
 
 export async function generateQuestions(grade, subject, topic, count = 5) {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
     // Debug log to check if key exists (don't log the actual key)
-    console.log("v4.0 - Using Groq (Llama 3.3 70B) - Ultra Fast!");
     console.log("🔑 API Key Status:", apiKey ? "Present" : "Missing");
 
     // If no API key, use fallback
-    if (!apiKey || apiKey.includes("your_groq_api_key")) {
-        console.warn("⚠️ No valid Groq API key. Using fallback.");
+    if (!apiKey || apiKey.includes("your_gemini_api_key")) {
+        console.warn("⚠️ No valid Gemini API key. Using fallback.");
         return Array.from({ length: count }, () => generateFallbackQuestion(grade, subject, topic));
     }
 
-    // Single Batch Strategy for Speed
-    // We fetch all questions in one go to reduce network latency.
-    const BATCH_SIZE = count;
+    // Parallel Fetching Strategy
+    // We fetch questions in small batches (size 1) in parallel to maximize speed.
+    // Gemini Flash is very fast, but generating 5 questions serially takes time.
+    // Parallel requests reduce the total wait time to roughly the time of generating 1 question.
+
+    const BATCH_SIZE = 1;
     const promises = [];
 
-    console.log(`🚀 Starting generation for ${count} questions...`);
+    console.log(`🚀 Starting parallel generation for ${count} questions...`);
 
-    // Just one batch
-    promises.push(fetchBatch(apiKey, grade, subject, topic, count));
+    for (let i = 0; i < count; i += BATCH_SIZE) {
+        const size = Math.min(BATCH_SIZE, count - i);
+        promises.push(fetchBatch(apiKey, grade, subject, topic, size));
+    }
 
     try {
         const results = await Promise.all(promises);
@@ -100,50 +104,77 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
         // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
-        const prompt = `You are an expert educator creating exam questions for US students.
+        const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for US students.
 
-Generate ${count} multiple-choice questions for:
-- Grade: ${grade}
+Generate ${count} challenging, exam-style multiple-choice questions for:
+- Grade Level: ${grade}
 - Subject: ${subject}
 - Topic: ${topic}
-- ID: ${seed}
+- Variation ID: ${seed} (Ensure questions are unique)
 
-RULES:
-1. Align with BASIS Charter School standards (rigorous)
-2. Test conceptual understanding
-3. Label options A), B), C), D)
-4. For math: use $...$ for inline math (e.g., $x^2$)
-5. NEVER use \\begin{pmatrix} or any LaTeX matrix environment!
-6. For 2x2 matrices, write them in plain text like this: 
-   "the matrix with first row [2, 1] and second row [4, 3]"
-   Or: "matrix A where a₁₁=2, a₁₂=1, a₂₁=4, a₂₂=3"
-7. For Chinese/Mandarin: use actual characters (你好, 谢谢)
-8. Keep explanations SHORT (1-2 sentences)
+CRITICAL REQUIREMENTS:
+1. Questions MUST align with BASIS Charter School Curriculum standards (known for accelerated & rigorous content)
+2. Difficulty should be HIGHER than standard US grade level (e.g. Grade 6 Science includes Biology/Chemistry/Physics concepts)
+3. Test deep conceptual understanding, critical thinking, and application
+4. Include real-world scenarios and problem-solving where appropriate
+5. Wrong answers should be plausible misconceptions students actually have
+6. Avoid trivial recall questions - focus on understanding and analysis
+7. Use proper academic language appropriate for ${grade}
+8. **IMPORTANT**: For ALL mathematical expressions, use LaTeX notation:
+   - Wrap inline math in single dollar signs: $x^2$
+   - Wrap display math in double dollar signs: $$\\frac{a}{b}$$
+   - **ALWAYS wrap LaTeX environments** (like cases, matrices) in double dollar signs:
+     $$ \\begin{cases} ... \\end{cases} $$
+   - Use \\neq for "not equal": $x \\neq 2$
+   - Use \\frac{numerator}{denominator} for fractions: $\\frac{3}{4}$ (NEVER use \\frac12)
+   - **ALWAYS use braces {} for fractions**, e.g., $\\frac{1}{2}$, not $\\frac12$
+   - Use ^ for exponents: $x^2$, $10^3$
+   - Use _ for subscripts: $H_2O$
+   - Use \\sqrt{} for square roots: $\\sqrt{16}$
+   - **ALWAYS use `bmatrix` for matrices** (square brackets) to match printed textbooks:
+     $$ \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix} $$
+   - Use \\cdot for multiplication: $2 \\cdot 3$
+   - Use \\div for division: $6 \\div 2$
+   - **DO NOT** put long sentences inside math delimiters. Only math symbols and numbers should be inside $.
+   - Examples: 
+     * "Solve $2x + 3 = 7$"
+     * "Simplify $\\frac{x^2 - 4}{x - 2}$"
+     * "Given $A = \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}$"
+     * "Calculate $\\sqrt{25} + 3^2$"
 
-Return ONLY valid JSON:
-[{"question": "...", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "answer": "A) ...", "explanation": "..."}]`;
+**JSON FORMATTING RULES:**
+- Return ONLY valid JSON.
+- **DOUBLE ESCAPE** all backslashes in LaTeX. Example: Use "\\\\frac" instead of "\\frac".
+- Use "\\\\sqrt" instead of "\\sqrt".
+- This is critical for the JSON to parse correctly.
 
-        // Direct API call using Groq
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+For each question, provide:
+- A clear, specific question that tests understanding
+- 4 answer options (one correct, three plausible distractors)
+- A brief explanation of the correct answer
+
+Return ONLY valid JSON (no markdown, no code blocks, no extra text):
+[
+  {
+    "question": "Clear, specific question text?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "answer": "The correct option (must match exactly one of the options)",
+    "explanation": "Why this answer is correct and what concept it tests"
+  }
+]`;
+
+        // Direct API call using fetch
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'You are a quiz generator. Return ONLY valid JSON. NEVER use LaTeX matrix commands like \\begin{pmatrix}. Keep explanations under 30 words.'
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 2500
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
             })
         });
 
@@ -154,11 +185,11 @@ Return ONLY valid JSON:
 
         const data = await response.json();
 
-        if (!data.choices || !data.choices[0]?.message?.content) {
+        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
             throw new Error('Invalid API response structure');
         }
 
-        let text = data.choices[0].message.content;
+        let text = data.candidates[0].content.parts[0].text;
 
         // --- ROBUST JSON CLEANING ---
         const cleanJSON = (str) => {
@@ -192,7 +223,7 @@ Return ONLY valid JSON:
             }
 
             // 6. Fix specific common issues
-            const commonCommands = ['frac', 'neq', 'sqrt', 'cdot', 'approx', 'leq', 'geq', 'infty'];
+            const commonCommands = ['frac', 'neq', 'sqrt', 'cdot', 'approx', 'leq', 'geq', 'infty', 'bmatrix', 'pmatrix', 'vmatrix'];
 
             commonCommands.forEach(cmd => {
                 const regex = new RegExp(`([^a-zA-Z0-9\\\\])${cmd}(?![a-zA-Z])`, 'g');
@@ -243,34 +274,7 @@ Return ONLY valid JSON:
             throw new Error("No valid questions generated");
         }
 
-        // Post-process to fix LaTeX delimiters and Unicode escapes
-        const fixText = (str) => {
-            if (!str) return str;
-            // Convert \( \) to $ $ for KaTeX
-            let fixed = str.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-            // Convert \[ \] to $$ $$ for display math
-            fixed = fixed.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
-            // Decode Unicode escapes like \u767e to actual characters
-            fixed = fixed.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
-                String.fromCharCode(parseInt(hex, 16))
-            );
-            // Fix matrix row breaks - the model often outputs single backslash or escaped backslash
-            // We need \\\\ in the string (which becomes \\ when rendered by KaTeX)
-            // First, normalize any \\\\  to \\ (in case of over-escaping)
-            fixed = fixed.replace(/\\\\\\\\/g, '\\\\');
-            return fixed;
-        };
-
-        // Apply fixes to all text fields
-        const fixedQuestions = validQuestions.map(q => ({
-            ...q,
-            question: fixText(q.question),
-            options: q.options.map(opt => fixText(opt)),
-            answer: fixText(q.answer),
-            explanation: fixText(q.explanation)
-        }));
-
-        return fixedQuestions.slice(0, count);
+        return validQuestions.slice(0, count);
 
     } catch (error) {
         console.error("Error in fetchBatch:", error);

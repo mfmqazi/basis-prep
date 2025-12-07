@@ -8,5 +8,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <App />
   </React.StrictMode>,
 )
-
-console.log("🚀 VERSION 4.0 - POWERED BY GROQ - ULTRA FAST!");
