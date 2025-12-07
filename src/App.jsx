@@ -15,7 +15,7 @@ function App() {
   return (
     <Router basename={import.meta.env.DEV ? '/' : '/basis-prep'}>
       <div className="bg-green-600 text-white text-center py-2 font-bold px-4">
-        v3.0 - NEW VERSION LOADED - GEMINI 1.5 ACTIVE
+        v3.1 - GEMINI 2.0 FLASH ACTIVE
       </div>
       <AuthProvider>
         <Layout>
