@@ -9,4 +9,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 
-console.log("🚀 VERSION 3.0 - CACHE BUSTED - USING GEMINI 1.5 FLASH");
+console.log("🚀 VERSION 4.0 - POWERED BY GROQ - ULTRA FAST!");

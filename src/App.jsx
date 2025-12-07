@@ -15,7 +15,7 @@ function App() {
   return (
     <Router basename={import.meta.env.DEV ? '/' : '/basis-prep'}>
       <div className="bg-green-600 text-white text-center py-2 font-bold px-4">
-        v3.1 - GEMINI 2.0 FLASH ACTIVE
+        v4.0 - POWERED BY GROQ ⚡
       </div>
       <AuthProvider>
         <Layout>
