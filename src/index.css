@@ -150,3 +150,7 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-300 rounded-full hover:bg-slate-400;
 }
+.header-basis {
+  background-color: var(--primary);
+  color: white;
+}
