@@ -1,39 +1,34 @@
-// Define curriculum based on Basis Charter Schools (Accelerated)
-// K-4: Primary
-// 5-7: Middle (Bridge)
-// 8-12: High (AP Focus)
+// Define curriculum based on Basis Charter School standards
+// Source: Basis Charter Schools Curriculum (K-12)
 
 const SUBJECTS_BY_GRADE = {
-    // Primary (K-4) - Basis "LET/SET" Model
+    // Primary (1-4) - LET/SET Model
+    // Focus: Connections, Humanities, Math/Science, Literacy
     primary: {
-        "Math": ["Arithmetic", "Saxon Math Concepts", "Geometry Basics", "Problem Solving", "Number Theory"],
-        "Science": ["Introduction to Science", "Physical World", "Living Things", "Engineering Basics"],
-        "Humanities": ["History", "Geography", "Culture", "Integrated Social Studies"],
-        "English": ["Phonics", "Reading Comprehension", "Grammar", "Writing", "Vocabulary"],
-        "Mandarin": ["Basic Vocabulary", "Sentences", "Culture", "Writing Characters"],
-        "Engineering": ["Structures", "Simple Machines", "Design Process", "Robotics Basics"]
+        "Math": ["Saxon Math", "Arithmetic", "Geometry Basics", "Problem Solving"],
+        "Science": ["Introduction to Science", "Physical Geography", "Engineering & Technology"],
+        "Humanities": ["History", "Civics", "Geography", "Cultural Studies"],
+        "English": ["Reading", "Writing", "Spelling", "Phonics", "Grammar"],
+        "Engineering": ["Engineering Design Process", "Structures", "Simple Machines"]
     },
-    // Middle (5-7) - Basis "Bridge to High School" (Separate Sciences start early)
+    // Middle School (5-7) - Specialized Subjects
+    // Biology, Chemistry, Physics start early (Gr 6)
     middle: {
-        "Math": ["Arithmetic", "Pre-Algebra", "Algebra I", "Geometry"],
-        "Biology": ["Cell Biology", "Genetics", "Evolution", "Human Anatomy", "Ecology"],
-        "Chemistry": ["Atomic Structure", "Periodic Table", "Chemical Bonding", "Reactions", "States of Matter"],
-        "Physics": ["Motion", "Forces", "Energy", "Waves", "Electricity"],
-        "English": ["Literature Analysis", "Composition", "Grammar", "Vocabulary", "Classics"],
-        "History": ["World History", "American History", "Geography", "Civics"],
-        "Latin": ["Grammar", "Vocabulary", "Translation", "Roman Culture", "Myths"]
+        "Math": ["Arithmetic B", "Pre-Algebra", "Algebra I", "Geometry"],
+        "Science": ["Introduction to Science (Gr 5)", "Biology", "Chemistry", "Physics"],
+        "English": ["English Language", "Literature", "Writing", "Classics"],
+        "History": ["World History", "American History", "Geography"],
+        "Electives": ["Latin", "Logic", "Economics", "Computer Science"]
     },
-    // High (8-12) - AP & Capstone Focus
+    // High School (8-12) - AP Focus
     high: {
-        "Math": ["Algebra II", "Pre-Calculus", "AP Calculus AB", "AP Calculus BC", "AP Statistics", "Complex Analysis"],
-        "Science": ["AP Biology", "AP Chemistry", "AP Physics 1", "AP Physics C: Mechanics", "AP Environmental Science", "Organic Chemistry"],
-        "English": ["AP English Language", "AP English Literature", "Rhetoric", "Creative Writing"],
-        "History": ["AP World History", "AP US History", "AP European History", "AP Government", "AP Economics", "AP Human Geography"],
-        "World Languages": ["AP Spanish", "AP French", "AP Latin", "AP Chinese"],
-        "Electives": ["AP Psychology", "AP Computer Science A", "Economics", "Art History"],
-        "Capstone": ["Senior Project (Research)", "Senior Project (Thesis)"]
+        "Math": ["Algebra II", "Pre-Calculus", "AP Calculus AB", "AP Calculus BC", "AP Statistics", "Linear Algebra"],
+        "Science": ["Honors Biology", "Honors Chemistry", "Honors Physics", "AP Biology", "AP Chemistry", "AP Physics"],
+        "English": ["Honors English Lit", "Honors English Lang", "AP English Language", "AP English Literature"],
+        "Social Science": ["AP World History", "AP US History", "AP Macreconomics", "AP Microeconomics", "AP Government", "AP Psychology"],
+        "Capstone": ["Senior Project", "Research Methods"]
     },
-    // AP - Keep for dedicated AP practice (Optional, but users might like the direct category)
+    // Advanced Placement (AP) - Full Suite
     ap: {
         "AP Arts": ["AP Art History", "AP Music Theory", "AP 2-D Art and Design"],
         "AP English": ["AP English Language and Composition", "AP English Literature and Composition"],
@@ -78,7 +73,7 @@ const SUBJECTS_BY_GRADE = {
     }
 };
 
-// Helper to determine grade level category
+// Helper to determine grade level category for Basis
 const getGradeLevel = (gradeNum) => {
     if (gradeNum <= 4) return 'primary';
     if (gradeNum <= 7) return 'middle';

@@ -6,27 +6,21 @@ export default function StudyMaterials() {
     const navigate = useNavigate();
 
     const materials = {
-        "Grades K-5": [
-            { title: "Saxon Math", type: "Textbook", url: "https://www.hmhco.com/programs/saxon-math", icon: BookOpen },
-            { title: "The Little Red Fort", type: "Book", url: "https://www.amazon.com/Little-Red-Fort-Brenda-Maier/dp/0545859199", icon: BookOpen },
-            { title: "The Most Magnificent Thing", type: "Book", url: "https://www.amazon.com/Most-Magnificent-Thing-Ashley-Spires/dp/1554537045", icon: BookOpen },
-            { title: "Sentence Composing for Elementary School", type: "Worktext", url: "https://www.heinemann.com/products/e00244.aspx", icon: FileText },
+        "Grades 1-3": [
             { title: "Khan Academy Kids", type: "Interactive", url: "https://www.khanacademy.org/kids", icon: Video },
-            { title: "Logic of English", type: "Curriculum", url: "https://www.logicofenglish.com/", icon: BookOpen }
+            { title: "ABCmouse", type: "Learning Platform", url: "https://www.abcmouse.com", icon: BookOpen },
+            { title: "PBS Kids", type: "Educational Games", url: "https://pbskids.org", icon: Video }
         ],
-        "Grades 6-8": [
-            { title: "Saxon Math Course 1-3", type: "Textbook", url: "https://www.hmhco.com/programs/saxon-math", icon: BookOpen },
-            { title: "Campbell Biology (Concepts & Connections)", type: "Textbook", url: "https://www.pearson.com/", icon: BookOpen },
-            { title: "The Western Heritage Since 1300", type: "History Textbook", url: "https://www.pearson.com/", icon: BookOpen },
-            { title: "Sentence Composing for Middle School", type: "Worktext", url: "https://www.heinemann.com/", icon: FileText },
-            { title: "Latin for Americans", type: "Textbook", url: "https://www.mheducation.com/", icon: BookOpen }
+        "Grades 4-6": [
+            { title: "Khan Academy Elementary", type: "Video Lessons", url: "https://www.khanacademy.org", icon: Video },
+            { title: "BrainPOP", type: "Animated Lessons", url: "https://www.brainpop.com", icon: Video },
+            { title: "Scholastic Learn at Home", type: "Daily Projects", url: "https://classroommagazines.scholastic.com/support/learnathome.html", icon: FileText }
         ],
-        "High School (9-12) & AP": [
-            { title: "College Physics (Knight, Jones, Field)", type: "AP Physics Textbook", url: "https://www.pearson.com/", icon: BookOpen },
-            { title: "Chemistry: The Central Science", type: "AP Chemistry Textbook", url: "https://www.pearson.com/", icon: BookOpen },
-            { title: "Calculus: Early Transcendentals (Stewart)", type: "AP Calculus Textbook", url: "https://www.cengage.com/", icon: BookOpen },
-            { title: "Myers' Psychology for AP", type: "AP Psychology Textbook", url: "https://www.macmillanlearning.com/", icon: BookOpen },
-            { title: "The American Pageant", type: "AP US History Textbook", url: "https://www.cengage.com/", icon: BookOpen }
+        "Grades 7-10": [
+            { title: "Khan Academy", type: "Comprehensive Courses", url: "https://www.khanacademy.org", icon: Video },
+            { title: "Crash Course", type: "Video Series", url: "https://www.youtube.com/user/crashcourse", icon: Video },
+            { title: "Quizlet", type: "Study Sets & Flashcards", url: "https://quizlet.com", icon: FileText },
+            { title: "MIT OpenCourseWare", type: "Advanced Topics", url: "https://ocw.mit.edu", icon: BookOpen }
         ]
     };
 
@@ -100,7 +94,7 @@ export default function StudyMaterials() {
                             can recommend additional materials tailored to your specific learning needs.
                         </p>
                         <p className="text-sm text-white/80 italic font-medium bg-white/10 inline-block px-4 py-2 rounded-lg">
-                            💡 Tip: Combine these resources with regular practice quizzes on EduQuiz for the best results!
+                            💡 Tip: Combine these resources with regular practice quizzes on Basis Prep for the best results!
                         </p>
                     </div>
                 </div>

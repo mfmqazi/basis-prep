@@ -22,17 +22,14 @@ export default function Layout({ children }) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="header-basis shadow-lg z-10 border-b border-basis-blue/30">
+      <header className="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white shadow-lg z-10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div
             className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => navigate('/')}
           >
-            {/* Basis-style Text Logo */}
-            <div className="flex flex-col items-start leading-none">
-              <span className="font-serif text-3xl font-bold tracking-widest text-white">BASIS</span>
-              <span className="font-sans text-xs font-bold tracking-[0.3em] text-basis-blue uppercase">Charter Schools</span>
-            </div>
+            <BookOpen size={28} strokeWidth={2.5} />
+            <span className="text-2xl font-black tracking-tight">Basis Prep</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -62,7 +59,7 @@ export default function Layout({ children }) {
                 <div className="h-8 w-px bg-white/20 mx-1 hidden md:block"></div>
                 <div className="text-right mr-2 hidden sm:block">
                   <div className="text-sm font-bold">{currentUser.displayName || 'Student'}</div>
-                  <div className="text-xs text-basis-blue">@{currentUser.email.split('@')[0]}</div>
+                  <div className="text-xs text-indigo-200">@{currentUser.email.split('@')[0]}</div>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -82,7 +79,7 @@ export default function Layout({ children }) {
                 </button>
                 <button
                   onClick={() => navigate('/signup')}
-                  className="px-4 py-2 rounded-lg bg-white text-basis-navy hover:bg-slate-100 transition-all font-bold text-sm shadow-md"
+                  className="px-4 py-2 rounded-lg bg-white text-indigo-700 hover:bg-indigo-50 transition-all font-bold text-sm shadow-md"
                 >
                   Sign Up
                 </button>
@@ -104,7 +101,7 @@ export default function Layout({ children }) {
       {showHelp && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowHelp(false)}>
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-basis-navy p-6 flex justify-between items-center rounded-t-2xl border-b border-white/10">
+            <div className="sticky top-0 bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 p-6 flex justify-between items-center rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <HelpCircle size={28} />
                 <h2 className="text-2xl font-bold text-white">Help & Guide</h2>

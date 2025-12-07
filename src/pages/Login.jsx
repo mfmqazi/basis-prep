@@ -27,9 +27,9 @@ export default function Login() {
 
     return (
         <div className="max-w-md mx-auto mt-20 px-4">
-            <div className="glass-panel p-8 animate-fade-in border-t-4 border-basis-blue shadow-2xl shadow-basis-navy/10">
+            <div className="glass-panel p-8 animate-fade-in border-t-4 border-indigo-500 shadow-2xl shadow-indigo-500/10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-basis-navy mb-4">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 mb-4">
                         <LogIn size={24} />
                     </div>
                     <h2 className="text-3xl font-bold text-slate-800">Welcome Back</h2>
@@ -46,7 +46,7 @@ export default function Login() {
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
                         <div className="relative group">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-basis-blue transition-colors" size={20} />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
                             <input
                                 type="email"
                                 ref={emailRef}
@@ -60,7 +60,7 @@ export default function Login() {
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
                         <div className="relative group">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-basis-blue transition-colors" size={20} />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={20} />
                             <input
                                 type="password"
                                 ref={passwordRef}
@@ -72,14 +72,14 @@ export default function Login() {
                     </div>
 
                     <div className="text-right">
-                        <Link to="/forgot-password" className="text-sm text-basis-blue hover:text-basis-navy font-medium hover:underline">
+                        <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800 font-medium hover:underline">
                             Forgot Password?
                         </Link>
                     </div>
 
                     <button
                         disabled={loading}
-                        className="btn btn-primary w-full py-3 text-lg shadow-lg shadow-basis-navy/30 mt-2"
+                        className="btn btn-primary w-full py-3 text-lg shadow-lg shadow-indigo-500/30 mt-2"
                         type="submit"
                     >
                         {loading ? (
@@ -93,7 +93,7 @@ export default function Login() {
                 </form>
 
                 <div className="w-full text-center mt-8 pt-6 border-t border-slate-100 text-slate-500 text-sm">
-                    Don't have an account? <Link to="/signup" className="text-basis-blue hover:text-basis-navy font-bold hover:underline">Sign Up</Link>
+                    Don't have an account? <Link to="/signup" className="text-indigo-600 hover:text-indigo-700 font-bold hover:underline">Sign Up</Link>
                 </div>
             </div>
         </div>

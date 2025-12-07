@@ -104,13 +104,7 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
         // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
-        // Initialize the SDK with the API version that supports the model
-        const genAI = new GoogleGenerativeAI(apiKey);
-
-        // Use gemini-2.0-flash-exp as it's the widely available experimental flash model
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-
-        const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for students at Basis Charter Schools (known for accelerated, high standards).
+        const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for US students.
 
 Generate ${count} challenging, exam-style multiple-choice questions for:
 - Grade Level: ${grade}
@@ -119,13 +113,13 @@ Generate ${count} challenging, exam-style multiple-choice questions for:
 - Variation ID: ${seed} (Ensure questions are unique)
 
 CRITICAL REQUIREMENTS:
-1. Questions MUST align with the accelerated Basis Charter Schools curriculum standards for ${grade}.
-2. Difficulty should match real standardized tests for this grade level at Basis schools.
+1. Questions MUST align with BASIS Charter School Curriculum standards (known for accelerated & rigorous content)
+2. Difficulty should be HIGHER than standard US grade level (e.g. Grade 6 Science includes Biology/Chemistry/Physics concepts)
 3. Test deep conceptual understanding, critical thinking, and application
 4. Include real-world scenarios and problem-solving where appropriate
 5. Wrong answers should be plausible misconceptions students actually have
 6. Avoid trivial recall questions - focus on understanding and analysis
-7. Use proper academic language appropriate for ${grade} (Basis students are advanced)
+7. Use proper academic language appropriate for ${grade}
 8. **IMPORTANT**: For ALL mathematical expressions, use LaTeX notation:
    - Wrap inline math in single dollar signs: $x^2$
    - Wrap display math in double dollar signs: $$\\frac{a}{b}$$
@@ -167,9 +161,33 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
   }
 ]`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        // Direct API call using fetch
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }]
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+            throw new Error('Invalid API response structure');
+        }
+
+        let text = data.candidates[0].content.parts[0].text;
 
         // --- ROBUST JSON CLEANING ---
         const cleanJSON = (str) => {
