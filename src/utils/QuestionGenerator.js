@@ -106,7 +106,8 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
 
         // Initialize the SDK
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // Fallback to gemini-pro if flash is causing 404s for this specific key/project combination
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
         const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for students at Basis Charter Schools (known for accelerated, high standards).
 
