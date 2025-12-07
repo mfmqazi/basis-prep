@@ -100,60 +100,29 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
         // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
-        const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for US students.
+        const prompt = `You are an expert educator creating exam questions for US students.
 
-Generate ${count} challenging, exam-style multiple-choice questions for:
-- Grade Level: ${grade}
+Generate ${count} multiple-choice questions for:
+- Grade: ${grade}
 - Subject: ${subject}
 - Topic: ${topic}
-- Variation ID: ${seed} (Ensure questions are unique)
+- ID: ${seed}
 
-CRITICAL REQUIREMENTS:
-1. Questions MUST align with BASIS Charter School Curriculum standards (known for accelerated & rigorous content)
-2. Difficulty should be HIGHER than standard US grade level (e.g. Grade 6 Science includes Biology/Chemistry/Physics concepts)
-3. Test deep conceptual understanding, critical thinking, and application
-4. Include real-world scenarios and problem-solving where appropriate
-5. Wrong answers should be plausible misconceptions students actually have
-6. Avoid trivial recall questions - focus on understanding and analysis
-7. Use proper academic language appropriate for ${grade}
-8. **IMPORTANT**: For ALL mathematical expressions, use LaTeX notation:
-   - Wrap inline math in single dollar signs: $x^2$
-   - Wrap display math in double dollar signs: $$\\frac{a}{b}$$
-   - **ALWAYS wrap LaTeX environments** (like cases, matrices) in double dollar signs:
-     $$ \\begin{cases} ... \\end{cases} $$
-   - Use \\neq for "not equal": $x \\neq 2$
-   - Use \\frac{numerator}{denominator} for fractions: $\\frac{3}{4}$ (NEVER use \\frac12)
-   - **ALWAYS use braces {} for fractions**, e.g., $\\frac{1}{2}$, not $\\frac12$
-   - Use ^ for exponents: $x^2$, $10^3$
-   - Use _ for subscripts: $H_2O$
-   - Use \\sqrt{} for square roots: $\\sqrt{16}$
-   - Use \\cdot for multiplication: $2 \\cdot 3$
-   - Use \\div for division: $6 \\div 2$
-   - **DO NOT** put long sentences inside math delimiters. Only math symbols and numbers should be inside $.
-   - Examples: 
-     * "Solve $2x + 3 = 7$"
-     * "Simplify $\\frac{x^2 - 4}{x - 2}$"
-     * "Given $x \\neq 0$ and $y \\neq 3$"
-     * "Calculate $\\sqrt{25} + 3^2$"
+REQUIREMENTS:
+1. Align with BASIS Charter School standards (rigorous, accelerated)
+2. Test conceptual understanding, not just memorization
+3. Include 4 plausible answer options
+4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
+5. For non-English text (Chinese, etc.): use actual characters, NOT Unicode escapes
+6. Keep questions clear and age-appropriate
 
-**JSON FORMATTING RULES:**
-- Return ONLY valid JSON.
-- **DOUBLE ESCAPE** all backslashes in LaTeX. Example: Use "\\\\frac" instead of "\\frac".
-- Use "\\\\sqrt" instead of "\\sqrt".
-- This is critical for the JSON to parse correctly.
-
-For each question, provide:
-- A clear, specific question that tests understanding
-- 4 answer options (one correct, three plausible distractors)
-- A brief explanation of the correct answer
-
-Return ONLY valid JSON (no markdown, no code blocks, no extra text):
+Return ONLY a JSON array with this format:
 [
   {
-    "question": "Clear, specific question text?",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "answer": "The correct option (must match exactly one of the options)",
-    "explanation": "Why this answer is correct and what concept it tests"
+    "question": "Question text here?",
+    "options": ["A", "B", "C", "D"],
+    "answer": "The correct option text",
+    "explanation": "Brief explanation"
   }
 ]`;
 
@@ -271,7 +240,30 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
             throw new Error("No valid questions generated");
         }
 
-        return validQuestions.slice(0, count);
+        // Post-process to fix LaTeX delimiters and Unicode escapes
+        const fixText = (str) => {
+            if (!str) return str;
+            // Convert \( \) to $ $ for KaTeX
+            let fixed = str.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
+            // Convert \[ \] to $$ $$ for display math
+            fixed = fixed.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
+            // Decode Unicode escapes like \u767e to actual characters
+            fixed = fixed.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+                String.fromCharCode(parseInt(hex, 16))
+            );
+            return fixed;
+        };
+
+        // Apply fixes to all text fields
+        const fixedQuestions = validQuestions.map(q => ({
+            ...q,
+            question: fixText(q.question),
+            options: q.options.map(opt => fixText(opt)),
+            answer: fixText(q.answer),
+            explanation: fixText(q.explanation)
+        }));
+
+        return fixedQuestions.slice(0, count);
 
     } catch (error) {
         console.error("Error in fetchBatch:", error);
