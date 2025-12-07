@@ -113,7 +113,9 @@ REQUIREMENTS:
 2. Test conceptual understanding, not just memorization
 3. Include 4 plausible answer options
 4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
-5. For non-English text (Chinese, etc.): use actual characters, NOT Unicode escapes
+5. For Chinese/Mandarin questions: ALWAYS include the actual Chinese characters directly in the question.
+   - Example: "What is the meaning of 你好?" NOT "What is the meaning of the Chinese character?"
+   - Include characters like: 你好, 谢谢, 再见, etc. directly in the text
 6. Keep questions clear and age-appropriate
 
 Return ONLY a JSON array with this format:
