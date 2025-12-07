@@ -113,7 +113,8 @@ REQUIREMENTS:
 2. Test conceptual understanding, not just memorization
 3. Include 4 plausible answer options (label them A, B, C, D)
 4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
-5. For matrices: use $$\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$$ format with \\\\ for row breaks
+5. For matrices: write them as [[a,b],[c,d]] format (NOT LaTeX pmatrix)
+   Example: "If A = [[1,2],[3,4]], find the determinant"
 6. For Chinese/Mandarin: include actual characters (你好, 谢谢, etc.)
 7. Keep explanations SHORT (1-2 sentences, under 50 words)
 
@@ -258,11 +259,10 @@ Return ONLY a valid JSON array:
             fixed = fixed.replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
                 String.fromCharCode(parseInt(hex, 16))
             );
-            // Fix matrix row breaks - ensure \\ becomes proper line breaks in matrices
-            // Replace single \\ with \\\\ for proper matrix row separation
-            fixed = fixed.replace(/\\begin\{(pmatrix|bmatrix|matrix)\}/g, (match) => {
-                return match;
-            });
+            // Fix matrix row breaks - the model often outputs single backslash or escaped backslash
+            // We need \\\\ in the string (which becomes \\ when rendered by KaTeX)
+            // First, normalize any \\\\  to \\ (in case of over-escaping)
+            fixed = fixed.replace(/\\\\\\\\/g, '\\\\');
             return fixed;
         };
 
