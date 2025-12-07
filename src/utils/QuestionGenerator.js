@@ -104,6 +104,10 @@ async function fetchBatch(apiKey, grade, subject, topic, count) {
         // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
+        // Initialize the SDK
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
         const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for students at Basis Charter Schools (known for accelerated, high standards).
 
 Generate ${count} challenging, exam-style multiple-choice questions for:
@@ -161,33 +165,9 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
   }
 ]`;
 
-        // Direct API call using fetch
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
-            throw new Error('Invalid API response structure');
-        }
-
-        let text = data.candidates[0].content.parts[0].text;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
 
         // --- ROBUST JSON CLEANING ---
         const cleanJSON = (str) => {
