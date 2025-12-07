@@ -58,26 +58,22 @@ function generateFallbackQuestion(grade, subject, topic) {
 }
 
 export async function generateQuestions(grade, subject, topic, count = 5) {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
     // Debug log to check if key exists (don't log the actual key)
-    console.log("🔑 API Key Status:", apiKey ? "Present" : "Missing");
+    console.log("🔑 Groq API Key Status:", apiKey ? "Present" : "Missing");
 
     // If no API key, use fallback
-    if (!apiKey || apiKey.includes("your_gemini_api_key")) {
-        console.warn("⚠️ No valid Gemini API key. Using fallback.");
+    if (!apiKey) {
+        console.warn("⚠️ No valid Groq API key. Using fallback.");
         return Array.from({ length: count }, () => generateFallbackQuestion(grade, subject, topic));
     }
 
     // Parallel Fetching Strategy
-    // We fetch questions in small batches (size 1) in parallel to maximize speed.
-    // Gemini Flash is very fast, but generating 5 questions serially takes time.
-    // Parallel requests reduce the total wait time to roughly the time of generating 1 question.
-
     const BATCH_SIZE = 1;
     const promises = [];
 
-    console.log(`🚀 Starting parallel generation for ${count} questions...`);
+    console.log(`🚀 Starting parallel generation for ${count} questions using Groq...`);
 
     for (let i = 0; i < count; i += BATCH_SIZE) {
         const size = Math.min(BATCH_SIZE, count - i);
@@ -86,9 +82,7 @@ export async function generateQuestions(grade, subject, topic, count = 5) {
 
     try {
         const results = await Promise.all(promises);
-        // Flatten the array of arrays
         const allQuestions = results.flat();
-
         console.log(`✅ Successfully generated ${allQuestions.length} questions in parallel!`);
         return allQuestions;
 
@@ -101,7 +95,6 @@ export async function generateQuestions(grade, subject, topic, count = 5) {
 
 async function fetchBatch(apiKey, grade, subject, topic, count) {
     try {
-        // Add a random seed to ensure diversity across parallel requests
         const seed = Math.random().toString(36).substring(7);
 
         const prompt = `You are an expert educator and test designer creating high-quality exam preparation questions for US students.
@@ -110,71 +103,37 @@ Generate ${count} challenging, exam-style multiple-choice questions for:
 - Grade Level: ${grade}
 - Subject: ${subject}
 - Topic: ${topic}
-- Variation ID: ${seed} (Ensure questions are unique)
+- Variation ID: ${seed}
 
 CRITICAL REQUIREMENTS:
-1. Questions MUST align with BASIS Charter School Curriculum standards (known for accelerated & rigorous content)
-2. Difficulty should be HIGHER than standard US grade level (e.g. Grade 6 Science includes Biology/Chemistry/Physics concepts)
-3. Test deep conceptual understanding, critical thinking, and application
-4. Include real-world scenarios and problem-solving where appropriate
-5. Wrong answers should be plausible misconceptions students actually have
-6. Avoid trivial recall questions - focus on understanding and analysis
-7. Use proper academic language appropriate for ${grade}
-8. **IMPORTANT**: For ALL mathematical expressions, use LaTeX notation:
-   - Wrap inline math in single dollar signs: $x^2$
-   - Wrap display math in double dollar signs: $$\\frac{a}{b}$$
-   - **ALWAYS wrap LaTeX environments** (like cases, matrices) in double dollar signs:
-     $$ \\begin{cases} ... \\end{cases} $$
-   - Use \\neq for "not equal": $x \\neq 2$
-   - Use \\frac{numerator}{denominator} for fractions: $\\frac{3}{4}$ (NEVER use \\frac12)
-   - **ALWAYS use braces {} for fractions**, e.g., $\\frac{1}{2}$, not $\\frac12$
-   - Use ^ for exponents: $x^2$, $10^3$
-   - Use _ for subscripts: $H_2O$
-   - Use \\sqrt{} for square roots: $\\sqrt{16}$
-   - **ALWAYS use bmatrix for matrices** (square brackets) to match printed textbooks:
-     $$ \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix} $$
-   - Use \\cdot for multiplication: $2 \\cdot 3$
-   - Use \\div for division: $6 \\div 2$
-   - **DO NOT** put long sentences inside math delimiters. Only math symbols and numbers should be inside $.
-   - Examples: 
-     * "Solve $2x + 3 = 7$"
-     * "Simplify $\\frac{x^2 - 4}{x - 2}$"
-     * "Given $A = \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}$"
-     * "Calculate $\\sqrt{25} + 3^2$"
+1. Questions MUST align with BASIS Charter School Curriculum standards.
+2. Difficulty should be HIGHER than standard US grade level.
+3. Test deep conceptual understanding.
+4. **ALWAYS use bmatrix for matrices** (square brackets):
+   $$ \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix} $$
+5. Return ONLY valid JSON array.
 
-**JSON FORMATTING RULES:**
-- Return ONLY valid JSON.
-- **DOUBLE ESCAPE** all backslashes in LaTeX. Example: Use "\\\\frac" instead of "\\frac".
-- Use "\\\\sqrt" instead of "\\sqrt".
-- This is critical for the JSON to parse correctly.
-
-For each question, provide:
-- A clear, specific question that tests understanding
-- 4 answer options (one correct, three plausible distractors)
-- A brief explanation of the correct answer
-
-Return ONLY valid JSON (no markdown, no code blocks, no extra text):
+Format:
 [
   {
-    "question": "Clear, specific question text?",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "answer": "The correct option (must match exactly one of the options)",
-    "explanation": "Why this answer is correct and what concept it tests"
+    "question": "Question text...",
+    "options": ["A", "B", "C", "D"],
+    "answer": "Correct Option",
+    "explanation": "Explanation..."
   }
 ]`;
 
-        // Direct API call using fetch
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: prompt
-                    }]
-                }]
+                messages: [{ role: "user", content: prompt }],
+                model: "llama3-70b-8192",
+                temperature: 0.7,
+                response_format: { type: "json_object" }
             })
         });
 
@@ -184,12 +143,11 @@ Return ONLY valid JSON (no markdown, no code blocks, no extra text):
         }
 
         const data = await response.json();
-
-        if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+        if (!data.choices || !data.choices[0]?.message?.content) {
             throw new Error('Invalid API response structure');
         }
 
-        let text = data.candidates[0].content.parts[0].text;
+        const text = data.choices[0].message.content;
 
         // --- ROBUST JSON CLEANING ---
         const cleanJSON = (str) => {
