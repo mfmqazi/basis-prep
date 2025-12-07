@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 :root {
-  --primary: #0C2340; /* Basis Navy */
-  --secondary: #C8102E; /* Basis Red */
-  --accent: #009BF2; /* Basis Blue */
+  --primary: #0C2340;
+  /* Basis Navy */
+  --secondary: #C8102E;
+  /* Basis Red */
+  --accent: #009BF2;
+  /* Basis Blue */
   --background-start: #f8fafc;
   --background-end: #e0f2fe;
 }
@@ -23,7 +26,8 @@
 @layer components {
   .glass-panel {
     @apply bg-white/90 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-xl;
-    box-shadow: 0 8px 32px 0 rgba(12, 35, 64, 0.08); /* Navy shadow */
+    box-shadow: 0 8px 32px 0 rgba(12, 35, 64, 0.08);
+    /* Navy shadow */
   }
 
   .btn {
@@ -31,29 +35,55 @@
   }
 
   .btn-primary {
-    /* Basis Navy to Blue Gradient */
-    @apply bg-gradient-to-r from-basis-navy to-basis-blue text-white hover:shadow-lg hover:shadow-basis-navy/30 hover:-translate-y-0.5;
+    @apply inline-flex items-center justify-center rounded-xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none hover:-translate-y-0.5;
+    background-image: linear-gradient(to right, var(--primary), var(--accent));
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 10px 15px -3px rgba(12, 35, 64, 0.3);
   }
 
   .btn-secondary {
-    @apply bg-white text-basis-navy border-2 border-slate-200 hover:border-basis-blue hover:text-basis-blue hover:bg-slate-50;
+    @apply bg-white border-2 border-slate-200 hover:bg-slate-50;
+    color: var(--primary);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .btn-accent {
-    @apply bg-basis-red text-white hover:shadow-lg hover:shadow-red-900/20 hover:-translate-y-0.5;
+    @apply text-white hover:shadow-lg hover:-translate-y-0.5;
+    background-color: var(--secondary);
+  }
+
+  .btn-accent:hover {
+    box-shadow: 0 10px 15px -3px rgba(200, 16, 46, 0.3);
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-basis-blue focus:ring-4 focus:ring-basis-blue/10 outline-none transition-all bg-white/80 backdrop-blur-sm shadow-sm;
+    @apply w-full px-4 py-3 rounded-xl border-2 border-slate-200 outline-none transition-all bg-white/80 backdrop-blur-sm shadow-sm;
+  }
+
+  .input-field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(0, 155, 242, 0.1);
   }
 
   .page-title {
-    @apply text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-basis-navy via-basis-blue to-basis-red mb-8 tracking-tight drop-shadow-sm;
+    @apply text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text mb-8 tracking-tight drop-shadow-sm;
+    background-image: linear-gradient(to right, var(--primary), var(--accent), var(--secondary));
   }
 
   /* Card Styles */
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-transparent hover:border-basis-blue/20;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-transparent;
+  }
+
+  .card-hover:hover {
+    border-color: rgba(0, 155, 242, 0.2);
   }
 }
 
