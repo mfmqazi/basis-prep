@@ -69,20 +69,15 @@ export async function generateQuestions(grade, subject, topic, count = 5) {
         return Array.from({ length: count }, () => generateFallbackQuestion(grade, subject, topic));
     }
 
-    // Parallel Fetching Strategy
-    // We fetch questions in small batches (size 1) in parallel to maximize speed.
-    // Gemini Flash is very fast, but generating 5 questions serially takes time.
-    // Parallel requests reduce the total wait time to roughly the time of generating 1 question.
-
-    const BATCH_SIZE = 1;
+    // Single Batch Strategy for Speed
+    // We fetch all questions in one go to reduce network latency.
+    const BATCH_SIZE = count;
     const promises = [];
 
-    console.log(`🚀 Starting parallel generation for ${count} questions...`);
+    console.log(`🚀 Starting generation for ${count} questions...`);
 
-    for (let i = 0; i < count; i += BATCH_SIZE) {
-        const size = Math.min(BATCH_SIZE, count - i);
-        promises.push(fetchBatch(apiKey, grade, subject, topic, size));
-    }
+    // Just one batch
+    promises.push(fetchBatch(apiKey, grade, subject, topic, count));
 
     try {
         const results = await Promise.all(promises);
