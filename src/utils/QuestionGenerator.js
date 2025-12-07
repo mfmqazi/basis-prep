@@ -131,7 +131,7 @@ CRITICAL REQUIREMENTS:
    - Use ^ for exponents: $x^2$, $10^3$
    - Use _ for subscripts: $H_2O$
    - Use \\sqrt{} for square roots: $\\sqrt{16}$
-   - **ALWAYS use `bmatrix` for matrices** (square brackets) to match printed textbooks:
+   - **ALWAYS use bmatrix for matrices** (square brackets) to match printed textbooks:
      $$ \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix} $$
    - Use \\cdot for multiplication: $2 \\cdot 3$
    - Use \\div for division: $6 \\div 2$
