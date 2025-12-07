@@ -108,25 +108,20 @@ Generate ${count} multiple-choice questions for:
 - Topic: ${topic}
 - ID: ${seed}
 
-REQUIREMENTS:
-1. Align with BASIS Charter School standards (rigorous, accelerated)
-2. Test conceptual understanding, not just memorization
-3. Include 4 plausible answer options (label them A, B, C, D)
-4. For math: use $...$ for inline math (e.g., $x^2$, $\\frac{1}{2}$)
-5. For matrices: write them as [[a,b],[c,d]] format (NOT LaTeX pmatrix)
-   Example: "If A = [[1,2],[3,4]], find the determinant"
-6. For Chinese/Mandarin: include actual characters (你好, 谢谢, etc.)
-7. Keep explanations SHORT (1-2 sentences, under 50 words)
+RULES:
+1. Align with BASIS Charter School standards (rigorous)
+2. Test conceptual understanding
+3. Label options A), B), C), D)
+4. For math: use $...$ for inline math (e.g., $x^2$)
+5. NEVER use \\begin{pmatrix} or any LaTeX matrix environment!
+6. For 2x2 matrices, write them in plain text like this: 
+   "the matrix with first row [2, 1] and second row [4, 3]"
+   Or: "matrix A where a₁₁=2, a₁₂=1, a₂₁=4, a₂₂=3"
+7. For Chinese/Mandarin: use actual characters (你好, 谢谢)
+8. Keep explanations SHORT (1-2 sentences)
 
-Return ONLY a valid JSON array:
-[
-  {
-    "question": "Question text?",
-    "options": ["A) option1", "B) option2", "C) option3", "D) option4"],
-    "answer": "A) option1",
-    "explanation": "Short 1-2 sentence explanation."
-  }
-]`;
+Return ONLY valid JSON:
+[{"question": "...", "options": ["A) ...", "B) ...", "C) ...", "D) ..."], "answer": "A) ...", "explanation": "..."}]`;
 
         // Direct API call using Groq
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -140,7 +135,7 @@ Return ONLY a valid JSON array:
                 messages: [
                     {
                         role: 'system',
-                        content: 'You are a quiz generator. Always respond with valid JSON only. Keep explanations under 50 words.'
+                        content: 'You are a quiz generator. Return ONLY valid JSON. NEVER use LaTeX matrix commands like \\begin{pmatrix}. Keep explanations under 30 words.'
                     },
                     {
                         role: 'user',
@@ -148,7 +143,7 @@ Return ONLY a valid JSON array:
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 3000
+                max_tokens: 2500
             })
         });
 
